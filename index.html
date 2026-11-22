@@ -52,6 +52,10 @@ input[type=text]{width:100%;border:2px solid var(--line);border-radius:12px;padd
 .wa{text-decoration:none;display:inline-block;background:var(--wa);color:#fff;border:0;border-radius:14px;padding:15px 18px;font-size:16px;font-weight:700;cursor:pointer;white-space:nowrap}
 .note{font-size:12px;color:#A39A9E;text-align:center;margin-top:18px}
 .tbc{font-size:12px;color:#B0763E;font-weight:600}
+.pay{display:flex;flex-direction:column;gap:10px}
+.pbtn{display:flex;justify-content:space-between;align-items:center;text-decoration:none;border-radius:14px;padding:15px 18px;font-size:16px;font-weight:700;background:#2A2124;color:#fff}
+.pbtn.pp{background:#FFC439;color:#1B2A4E}
+.pbtn.bn{background:#fff;color:var(--ink);border:2px solid var(--line)}
 </style></head><body>
 <div class="wrap">
 <header><div class="brand">105 KM<small>DI RICAMI</small></div>
@@ -85,10 +89,18 @@ input[type=text]{width:100%;border:2px solid var(--line);border-radius:12px;padd
   <div class="stepper" data-k="cion"><button data-d="-1">−</button><span class="n">1</span><button data-d="1">+</button></div>
   <p class="hint">Collana con un ciondolo 30 €, ogni ciondolo in più +10 €.</p>
   <div style="margin-top:12px"><input type="text" id="nomiC" placeholder="Nome o dedica (facoltativo)"></div></div>
+ <div class="card" id="pagaCard"><h2>4 · Pagamento <span class="tbc">metodi da confermare</span></h2>
+  <p class="hint" style="margin:0 0 12px">Prima mandaci la richiesta e la foto su WhatsApp: quando confermiamo che la foto va bene, paghi qui la tua collana.</p>
+  <div class="pay">
+   <a class="pbtn" href="#" data-m="carta">💳 Paga con carta <b class="ptot">30 €</b></a>
+   <a class="pbtn pp" href="#" data-m="PayPal">Paga con PayPal <b class="ptot">30 €</b></a>
+   <a class="pbtn bn" href="#" data-m="bonifico">🏦 Bonifico <b class="ptot">30 €</b></a>
+  </div>
+  <p class="hint" id="payMsg" hidden></p></div>
 </section>
 
 <div class="card"><h2>Come funziona</h2>
- <ol class="how"><li>Scegli il prodotto e vedi il prezzo</li><li>Tocca <b>Invia su WhatsApp</b>: il messaggio è già scritto</li><li>Ci mandi in chat la foto del tuo animale</li><li>Ti seguiamo noi fino all'approvazione e ti mandiamo il link per pagare</li></ol></div>
+ <ol class="how"><li>Scegli il prodotto e vedi il prezzo</li><li>Tocca <b>Invia su WhatsApp</b>: il messaggio è già scritto</li><li>Ci mandi in chat la foto del tuo animale</li><li>Ti seguiamo noi fino all'approvazione: per i ricami ti mandiamo il link per pagare, le collane le paghi direttamente qui</li></ol></div>
 <p class="note">Esempio preparato per 105 Km di Ricami · prezzi indicativi, spedizione esclusa · le voci "da confermare" sono da verificare</p>
 </div>
 
@@ -114,7 +126,10 @@ function state(){
  return {tot,riep:`Collana ${fl} · ${m} · ${n.cion} ${n.cion>1?'ciondoli':'ciondolo'}`,
   msg:`Ciao! Vorrei un preventivo per una collana:\n• Ciondolo ${fl}, ${m}\n• ${n.cion} ${n.cion>1?'ciondoli':'ciondolo'}${$('#nomiC').value?`\n• Nome/dedica: ${$('#nomiC').value}`:''}\nTotale indicativo: ${tot} €\nVi mando ora la foto 📸`}
 }
-function upd(){const s=state();$('#tot').textContent=s.tot+' €';$('#riep').textContent=s.riep;$('#send').href=`https://wa.me/${NUMERO}?text=${encodeURIComponent(s.msg)}`}
+// Link di pagamento di 105 Km (da collegare): es. link SumUp/Stripe, paypal.me, IBAN
+const PAGAMENTI={carta:"",PayPal:"",bonifico:""};
+document.querySelectorAll('.pbtn').forEach(b=>b.onclick=e=>{const url=PAGAMENTI[b.dataset.m];if(url){return}e.preventDefault();const m=document.getElementById('payMsg');m.hidden=false;m.textContent=`Esempio: qui si aprirà il pagamento con ${b.dataset.m} di ${document.getElementById('tot').textContent}. Il collegamento si attiva con i dati di 105 Km.`});
+function upd(){const s=state();$('#tot').textContent=s.tot+' €';$('#riep').textContent=s.riep;$('#send').href=`https://wa.me/${NUMERO}?text=${encodeURIComponent(s.msg)}`;$$('.ptot').forEach(x=>x.textContent=s.tot+' €');$$('.pbtn').forEach(b=>{const u=PAGAMENTI[b.dataset.m];if(u){b.href=u;b.target='_blank'}})}
 ['#nomiR','#nomiC'].forEach(i=>$(i).addEventListener('input',upd));
 upd();
 </script></body></html>
