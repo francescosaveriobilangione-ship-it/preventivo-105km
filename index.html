@@ -73,6 +73,8 @@ body.v #verifica{display:block} body.v .main,body.v .bar{display:none}
 .vbox input{text-transform:uppercase;letter-spacing:.06em}
 .vres{margin-top:18px;background:#fff;border-radius:6px;padding:16px;line-height:1.7}
 .vres.bad{color:#9b1c1c}
+.wa.err{background:#E9B949;color:var(--ink);white-space:normal;font-size:14px;line-height:1.25;max-width:62%;text-align:center}
+.flag{outline:3px dashed #E9B949;outline-offset:6px;border-radius:8px}
 </style></head><body>
 <div class="wrap" id="verifica">
  <div class="mark">105 KM <i>di ricami</i></div>
@@ -127,6 +129,7 @@ body.v #verifica{display:block} body.v .main,body.v .bar{display:none}
  <p class="q">Quanti ciondoli?</p>
  <div class="count" data-k="cion"><button data-d="-1" aria-label="Meno">−</button><output>1</output><button data-d="1" aria-label="Più">+</button></div>
  <p class="note">Collana con un ciondolo 30 €, ogni altro ciondolo +10 €.</p>
+ <p class="note" id="warnC" hidden></p>
  <input type="text" id="nomiC" placeholder="Nome o dedica da incidere (se vuoi)" maxlength="30">
  <hr class="stitch">
  <p class="q">Pagamento <small>metodi da confermare</small></p>
@@ -190,6 +193,19 @@ function route(){document.body.classList.toggle('v',location.hash==='#verifica')
 window.addEventListener('hashchange',route);route();
 $('#vcode').addEventListener('input',e=>{if(e.target.value.trim().length>=8)verifica(e.target.value)});
 const SAYS={1:['🐶','Non dimenticarti di nessuno, eh!'],2:['🐾','In due si sta meglio. Anche sul ricamo.'],3:['🐱','Tre? Allora voglio stare al centro.'],4:['🐶','Siamo una bella famiglia!']};
+
+const cnt=v=>v?v.split(/\s*(?:,|&|\+|\se\s)\s*/).filter(Boolean).length:0;
+function problema(){
+ if(tab==='ricami'){const k=cnt($('#nomiR').value.trim());if(k>n.sogg)return{t:`🐶 Ops! Hai scritto ${k} nomi ma ${n.sogg} ${n.sogg>1?'musetti':'musetto'}`,el:'[data-k=sogg]'}}
+ else{const k=cnt($('#nomiC').value.trim());if(k>n.cion)return{t:`🐱 Miao? ${k} nomi ma ${n.cion} ${n.cion>1?'ciondoli':'ciondolo'}`,el:'[data-k=cion]'}}
+ return null}
 function upd(){const s=state();{const k=Math.min(4,n.sogg),q=SAYS[k];$('#whoS').textContent=q[0];$('#bubS').textContent=q[1];$('#bubR').textContent=pick('prodotto').dataset.v==='Felpa'?'Ottima scelta: la felpa è calda e ci si dorme sopra benissimo.':'La t-shirt va bene, ma d\'inverno pensaci: la felpa è più calda.'}$('#tot').textContent=s.tot+' €';$('#riep').textContent=s.riep;$('#send').href=`https://wa.me/${NUMERO}?text=${encodeURIComponent(s.msg)}`;$$('.ptot').forEach(x=>x.textContent=s.tot+' €');$$('.pbtn').forEach(b=>{const u=PAGAMENTI[b.dataset.m];if(u){b.href=u;b.target='_blank'}})}
+function controlla(){const e=problema(),b=$('#send');$$('.flag').forEach(x=>x.classList.remove('flag'));
+ const wc=$('#warnC');if(tab==='collane'&&e){wc.hidden=false;wc.textContent='Hai scritto più nomi che ciondoli: se servono più ciondoli, aumentali qui sopra.'}else wc.hidden=true;
+ if(e&&tab==='ricami'){$('#whoS').textContent='🐕';$('#bubS').textContent='Ehi, e io? Aggiungi un musetto anche per me!'}
+ if(e){b.classList.add('err');b.textContent=e.t;b.dataset.err=e.el}else{b.classList.remove('err');b.textContent='Invia su WhatsApp';delete b.dataset.err}}
+$('#send').addEventListener('click',ev=>{const sel=ev.currentTarget.dataset.err;if(!sel)return;ev.preventDefault();const t=$(`#${tab} ${sel}`);t.classList.add('flag');t.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'center'})});
+const _upd=upd;upd=function(){_upd();controlla()};
+['#nomiR','#nomiC'].forEach(i=>$(i).addEventListener('input',controlla));
 upd();
 </script></body></html>
