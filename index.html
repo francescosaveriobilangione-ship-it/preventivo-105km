@@ -203,7 +203,7 @@ function upd(){const s=state();{const k=Math.min(4,n.sogg),q=SAYS[k];$('#whoS').
 function controlla(){const e=problema(),b=$('#send');$$('.flag').forEach(x=>x.classList.remove('flag'));
  const wc=$('#warnC');if(tab==='collane'&&e){wc.hidden=false;wc.textContent='Hai scritto più nomi che ciondoli: se servono più ciondoli, aumentali qui sopra.'}else wc.hidden=true;
  if(e&&tab==='ricami'){$('#whoS').textContent='🐕';$('#bubS').textContent='Ehi, e io? Aggiungi un musetto anche per me!'}
- if(e){b.classList.add('err');b.textContent=e.t;b.dataset.err=e.el}else{b.classList.remove('err');b.textContent='Invia su WhatsApp';delete b.dataset.err}}
+ if(e){b.classList.add('err');b.textContent=e.t;b.dataset.err=e.el;b.setAttribute('href','#');b.removeAttribute('target');b.setAttribute('aria-disabled','true')}else{b.classList.remove('err');b.textContent='Invia su WhatsApp';delete b.dataset.err;b.setAttribute('target','_blank');b.removeAttribute('aria-disabled')}}
 $('#send').addEventListener('click',ev=>{const sel=ev.currentTarget.dataset.err;if(!sel)return;ev.preventDefault();const t=$(`#${tab} ${sel}`);t.classList.add('flag');t.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'center'})});
 const _upd=upd;upd=function(){_upd();controlla()};
 ['#nomiR','#nomiC'].forEach(i=>$(i).addEventListener('input',controlla));
