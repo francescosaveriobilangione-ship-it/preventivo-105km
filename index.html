@@ -91,6 +91,7 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(-
  <div class="count" data-k="sogg"><button data-d="-1" aria-label="Meno">−</button><output>1</output><button data-d="1" aria-label="Più">+</button></div>
  <p class="note">Il primo è compreso, ogni altro soggetto +10 €.</p>
  <input type="text" id="nomiR" placeholder="I loro nomi (se vuoi ricamarli)" maxlength="40">
+ <p class="note" id="warnR" hidden></p>
  <div class="preview empty" id="prevR">Scrivi un nome e lo vedi qui, come sarà ricamato.</div>
 </section>
 
@@ -147,11 +148,12 @@ $$('.pbtn').forEach(b=>b.addEventListener('click',e=>{if(PAGAMENTI[b.dataset.m])
 const pl=(k,s,p)=>`${k} ${k>1?p:s}`;
 function state(){
  if(tab==='ricami'){const p=pick('prodotto'),tot=+p.dataset.p+(n.sogg-1)*10,nm=$('#nomiR').value.trim(),pv=$('#prevR');
+  const nn=nm?nm.split(/\s*(?:,|&|\+|\se\s)\s*/).filter(Boolean).length:0,w=$('#warnR');w.hidden=!(nn>n.sogg);w.textContent=`Hai scritto ${nn} nomi: se sono ${nn} animali, aumenta i musetti qui sopra.`;
   if(nm){pv.textContent=nm;pv.classList.remove('empty')}else{pv.textContent='Scrivi un nome e lo vedi qui, come sarà ricamato.';pv.classList.add('empty')}
-  return{tot,riep:`${p.dataset.v}, ${pl(n.sogg,'soggetto','soggetti')}`,msg:`Ciao! Vorrei un preventivo per un ricamo:\n• ${p.dataset.v}, taglia ${label(pick('taglia'))}, colore ${label(pick('colore'))}\n• ${pl(n.sogg,'soggetto','soggetti')}${nm?`\n• Nomi: ${nm}`:''}\nTotale indicativo: ${tot} €\nVi mando ora la foto 📸`}}
+  return{tot,riep:`${p.dataset.v}, ${pl(n.sogg,'soggetto','soggetti')}`,msg:`Ciao! Vorrei un ricamo.\n\nProdotto: ${p.dataset.v}\nTaglia: ${label(pick('taglia'))}\nColore: ${label(pick('colore'))}\nSoggetti: ${n.sogg}${nm?`\nNomi: ${nm}`:''}\nPrezzo indicato: ${tot} €\n\nOra vi mando la foto.`}}
  const f=pick('forma').dataset.v,m=pick('metallo').dataset.v,nm=$('#nomiC').value.trim();$('#pimg').src=IMG[f+'_'+m];$('#prevC').textContent=nm;
  const tot=30+(n.cion-1)*10,fl=f==='rett'?'rettangolare':'a cuore';
- return{tot,riep:`Collana ${fl}, ${m}, ${pl(n.cion,'ciondolo','ciondoli')}`,msg:`Ciao! Vorrei un preventivo per una collana:\n• Ciondolo ${fl}, ${m}\n• ${pl(n.cion,'ciondolo','ciondoli')}${nm?`\n• Nome/dedica: ${nm}`:''}\nTotale indicativo: ${tot} €\nVi mando ora la foto 📸`}
+ return{tot,riep:`Collana ${fl}, ${m}, ${pl(n.cion,'ciondolo','ciondoli')}`,msg:`Ciao! Vorrei una collana.\n\nForma: ${fl==='rettangolare'?'Rettangolare':'A cuore'}\nColore: ${m==='oro'?'Oro':'Argento'}\nCiondoli: ${n.cion}${nm?`\nIncisione: ${nm}`:''}\nPrezzo indicato: ${tot} €\n\nOra vi mando la foto.`}
 }
 function upd(){const s=state();$('#tot').textContent=s.tot+' €';$('#riep').textContent=s.riep;$('#send').href=`https://wa.me/${NUMERO}?text=${encodeURIComponent(s.msg)}`;$$('.ptot').forEach(x=>x.textContent=s.tot+' €');$$('.pbtn').forEach(b=>{const u=PAGAMENTI[b.dataset.m];if(u){b.href=u;b.target='_blank'}})}
 upd();
