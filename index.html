@@ -198,7 +198,7 @@ const SAYS={1:['🐶','Non dimenticarti di nessuno, eh!'],2:['🐾','In due si s
 
 const cnt=v=>v?v.split(/\s*(?:,|&|\+|\se\s)\s*/).filter(Boolean).length:0;
 function problema(){
- if(tab==='ricami'){const k=cnt($('#nomiR').value.trim());if(k>n.sogg)return{t:`🐶 Ops! Hai scritto ${k} nomi ma ${n.sogg} ${n.sogg>1?'musetti':'musetto'}`,el:'[data-k=sogg]'}}
+ if(tab==='ricami'){const k=cnt($('#nomiR').value.trim());if(k&&k!==n.sogg)return{t:`🐶 Ops! Hai scritto ${k} ${k>1?'nomi':'nome'} ma ${n.sogg} ${n.sogg>1?'musetti':'musetto'}`,el:k>n.sogg?'[data-k=sogg]':'#nomiR'}}
  return null}
 function upd(){const s=state();{const k=Math.min(4,n.sogg),q=SAYS[k];$('#whoS').textContent=q[0];$('#bubS').textContent=q[1]}$('#tot').textContent=s.tot+' €';$('#riep').textContent=s.riep;$('#send').href=`https://wa.me/${NUMERO}?text=${encodeURIComponent(s.msg)}`;$$('.ptot').forEach(x=>x.textContent=s.tot+' €');$$('.pbtn').forEach(b=>{const u=PAGAMENTI[b.dataset.m];if(u){b.href=u;b.target='_blank'}})}
 function controlla(){const e=problema(),b=$('#send');$$('.flag').forEach(x=>x.classList.remove('flag'));
